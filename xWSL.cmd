@@ -1,7 +1,8 @@
 @ECHO OFF
-SET GITORG=DesktopECHO
+SET GITORG=vickunwu
 SET GITPRJ=xWSL
 SET BRANCH=master
+SET DOWNLOADAREA=C:\WSL\downloads
 SET BASE=https://github.com/%GITORG%/%GITPRJ%/raw/%BRANCH%
 
 REM ## UAC Check 
@@ -19,8 +20,8 @@ POWERSHELL.EXE -command "Enable-WindowsOptionalFeature -Online -FeatureName Micr
 CLS && SET RUNSTART=%date% @ %time%
 
 REM ## Determine ideal DPI
-IF NOT EXIST "%TEMP%\dpi.ps1" POWERSHELL.EXE -ExecutionPolicy Bypass -Command "wget '%BASE%/dpi.ps1' -UseBasicParsing -OutFile '%TEMP%\dpi.ps1'"
-FOR /f "delims=" %%a in ('powershell -ExecutionPolicy bypass -command "%TEMP%\dpi.ps1" ') do set "LINDPI=%%a"
+IF NOT EXIST "%DOWNLOADAREA%\dpi.ps1" POWERSHELL.EXE -ExecutionPolicy Bypass -Command "wget '%BASE%/dpi.ps1' -UseBasicParsing -OutFile '%DOWNLOADAREA%\dpi.ps1'"
+FOR /f "delims=" %%a in ('powershell -ExecutionPolicy bypass -command "%DOWNLOADAREA%\dpi.ps1" ') do set "LINDPI=%%a"
 
 REM ## Get installation parameters
 IF /I "%CD%"=="C:\Windows\System32" CD "%HOMEPATH%"
@@ -43,32 +44,31 @@ IF "%_rlt%"=="\\" SET DISTROFULL=%CD%%DISTRO%
 SET GO="%DISTROFULL%\LxRunOffline.exe" r -n "%DISTRO%" -c
 ECHO:
 ECHO Download and install "%DISTRO%" to location "%DISTROFULL%" 
-IF NOT EXIST "%TEMP%\Ubuntu2004.zip" POWERSHELL.EXE -Command "Start-BitsTransfer -source https://aka.ms/wslubuntu2004 -destination '%TEMP%\Ubuntu2004.zip'"
-POWERSHELL.EXE -command "Expand-Archive -Path '%TEMP%\Ubuntu2004.zip' -DestinationPath '%TEMP%' -force
+IF NOT EXIST "%DOWNLOADAREA%\Ubuntu2004.zip" POWERSHELL.EXE -Command "Start-BitsTransfer -source https://aka.ms/wslubuntu2004 -destination '%DOWNLOADAREA%\Ubuntu2004.zip'"
+POWERSHELL.EXE -command "Expand-Archive -Path '%DOWNLOADAREA%\Ubuntu2004.zip' -DestinationPath '%DOWNLOADAREA%' -force
 ECHO:
 ECHO Installing Distro Base...
-IF NOT EXIST "%TEMP%\LxRunOffline.exe" POWERSHELL.EXE -Command "wget %BASE%/LxRunOffline.exe -UseBasicParsing -OutFile '%TEMP%\LxRunOffline.exe'"
-START /WAIT /MIN "Installing Distro Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\install.tar.gz" "-d" "%DISTROFULL%"
-%TEMP%\LxRunOffline.exe sd -n "%DISTRO%"
-COPY "%TEMP%\LxRunOffline.*" "%DISTROFULL%" > NUL
+IF NOT EXIST "%DOWNLOADAREA%\LxRunOffline.exe" POWERSHELL.EXE -Command "wget %BASE%/LxRunOffline.exe -UseBasicParsing -OutFile '%DOWNLOADAREA%\LxRunOffline.exe'"
+START /WAIT /MIN "Installing Distro Base..." "%DOWNLOADAREA%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%DOWNLOADAREA%\install.tar.gz" "-d" "%DISTROFULL%"
+%DOWNLOADAREA%\LxRunOffline.exe sd -n "%DISTRO%"
+COPY "%DOWNLOADAREA%\LxRunOffline.*" "%DISTROFULL%" > NUL
 ECHO:
 ECHO Add exclusions in Windows Defender if requested...
-IF NOT EXIST %TEMP%\excludeWSL.ps1 POWERSHELL.EXE -Command "wget %BASE%/excludeWSL.ps1 -UseBasicParsing -OutFile '%TEMP%\excludeWSL.ps1'"
-IF %DEFEXL%==X POWERSHELL.EXE -ExecutionPolicy bypass -command "%TEMP%\excludeWSL.ps1 '%DISTROFULL%'"
+IF NOT EXIST %DOWNLOADAREA%\excludeWSL.ps1 POWERSHELL.EXE -Command "wget %BASE%/excludeWSL.ps1 -UseBasicParsing -OutFile '%DOWNLOADAREA%\excludeWSL.ps1'"
+IF %DEFEXL%==X POWERSHELL.EXE -ExecutionPolicy bypass -command "%DOWNLOADAREA%\excludeWSL.ps1 '%DISTROFULL%'"
 ECHO:
 ECHO Download xWSL overlay...
 CD "%DISTROFULL%"
+ECHO Change Repo
+%GO% "cp /etc/apt/sources.list /etc/apt/sources.list.bak"
+%GO% "sed -i 's/http:\/\/.*.ubuntu.com/https:\/\/mirrors.ustc.edu.cn/g' /etc/apt/sources.list"
+%GO% "apt-get update"
 ECHO xWSL INPUT SPECIFICATIONS // Path: %DISTROFULL% // Distro: %DISTRO% // RDP Port: %RDPPRT% // SSH Port: %SSHPRT% > Step0_Inputs.log
 %GO% "cd /tmp ; git clone -b %BRANCH% --depth=1 https://github.com/%GITORG%/%GITPRJ%.git"
 %GO% "ssh-keygen -A ; mkdir -p /root/.local/share ; apt-get update" > Step1_Update.log
 ECHO:
 ECHO Install repo packages, please wait...
 %GO% "DEBIAN_FRONTEND=noninteractive apt-get -y install /tmp/xWSL/deb/gksu_2.1.0_amd64.deb /tmp/xWSL/deb/libgksu2-0_2.1.0_amd64.deb /tmp/xWSL/deb/libgnome-keyring0_3.12.0-1+b2_amd64.deb /tmp/xWSL/deb/libgnome-keyring-common_3.12.0-1_all.deb /tmp/xWSL/deb/multiarch-support_2.27-3ubuntu1_amd64.deb /tmp/xWSL/deb/xrdp_0.9.13.1-2_amd64.deb /tmp/xWSL/deb/xorgxrdp_0.2.12-1_amd64.deb /tmp/xWSL/deb/plata-theme_0.9.8-0ubuntu1~focal1_all.deb /tmp/xWSL/deb/papirus-icon-theme_20200901-4672+pkg21~ubuntu20.04.1_all.deb /tmp/xWSL/deb/fonts-cascadia-code_2005.15-1_all.deb --no-install-recommends" > Step2_InstallBase.log
-ECHO:
-ECHO Install Seamonkey Browser...
-%GO% "echo deb http://downloads.sourceforge.net/project/ubuntuzilla/mozilla/apt all main >> /etc/apt/sources.list"
-%GO% "apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 2667CA5C ; apt-get update ; apt-get -y install seamonkey-mozilla-build" > Step3_BrowserInstall.log
-%GO% "update-alternatives --install /usr/bin/www-browser www-browser /usr/bin/seamonkey 100 ; update-alternatives --install /usr/bin/gnome-www-browser gnome-www-browser /usr/bin/seamonkey 100 ; update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/seamonkey 100" > Step4_BrowserDefaults.log
 ECHO:
 ECHO Install dependencies for desktop environments...
 %GO% "DEBIAN_FRONTEND=noninteractive apt-get -y install x11-apps x11-session-utils x11-xserver-utils pulseaudio dialog distro-info-data lsb-release dumb-init inetutils-syslogd xdg-utils avahi-daemon libnss-mdns binutils putty synaptic pulseaudio-utils pulseaudio mesa-utils bzip2 p7zip-full unar unzip zip libatkmm-1.6-1v5 libcairomm-1.0-1v5 libcanberra-gtk3-0 libcanberra-gtk3-module libglibmm-2.4-1v5 libgtkmm-3.0-1v5 libpangomm-1.4-1v5 libsigc++-2.0-0v5 dbus-x11 libdbus-glib-1-2 libqt5core5a --no-install-recommends" > Step5_DesktopDeps.log
@@ -109,6 +109,7 @@ SET /A SESMAN = %RDPPRT% - 50
 %GO% "chmod 644 /tmp/xWSL/dist/etc/profile.d/WinNT.sh"
 %GO% "chmod 644 /tmp/xWSL/dist/etc/xrdp/xrdp.ini"
 %GO% "cp -r /tmp/xWSL/dist/* /"
+%GO% "rm -rf /etc/skel/.mozilla/seamonkey"
 %GO% "strip --remove-section=.note.ABI-tag /usr/lib/x86_64-linux-gnu/libQt5Core.so.5"
 SET RUNEND=%date% @ %time%
 CD %DISTROFULL% 
@@ -119,7 +120,7 @@ BASH -c "useradd -m -p nulltemp -s /bin/bash %XU%"
 POWERSHELL -Command $prd = read-host "Enter password" -AsSecureString ; $BSTR=[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($prd) ; [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR) > .tmp & set /p PWO=<.tmp
 BASH -c "echo %XU%:%PWO% | chpasswd"
 %GO% "sed -i 's/PLACEHOLDER/%XU%/g' /tmp/xWSL/xWSL.rdp"
-%GO% "sed -i 's/COMPY/%COMPUTERNAME%/g' /tmp/xWSL/xWSL.rdp"
+%GO% "sed -i 's/COMPY/%COMPUTERNAME%-%DISTRO%\.local/g' /tmp/xWSL/xWSL.rdp"
 %GO% "sed -i 's/RDPPRT/%RDPPRT%/g' /tmp/xWSL/xWSL.rdp"
 %GO% "cp /tmp/xWSL/xWSL.rdp ./xWSL._"
 ECHO $prd = Get-Content .tmp > .tmp.ps1
@@ -139,8 +140,8 @@ REM ## Build RDP, Console, Init Links, Scheduled Task...
 ECHO @WSLCONFIG /t %DISTRO% > "%DISTROFULL%\Init.cmd"
 ECHO @WSL ~ -u root -d %DISTRO% -e initWSL 2 >> "%DISTROFULL%\Init.cmd"
 ECHO @WSL ~ -u %XU% -d %DISTRO%               > "%DISTROFULL%\%DISTRO% (%XU%) Console.cmd"
-COPY /Y "%DISTROFULL%\%DISTRO% (%XU%) Console.cmd" "%USERPROFILE%\Desktop\%DISTRO% (%XU%) Console.cmd" > NUL
-COPY /Y "%DISTROFULL%\%DISTRO% (%XU%) Desktop.rdp" "%USERPROFILE%\Desktop\%DISTRO% (%XU%) Desktop.rdp" > NUL
+COPY /Y "%DISTROFULL%\%DISTRO% (%XU%) Console.cmd" "%USERPROFILE%\Desktop\WSL Console.cmd" > NUL
+COPY /Y "%DISTROFULL%\%DISTRO% (%XU%) Desktop.rdp" "%USERPROFILE%\Desktop\WSL Desktop.rdp" > NUL
 START /MIN "%DISTRO% Init" WSL ~ -u root -d %DISTRO% -e initWSL 2
 POWERSHELL -C "$WAI = (whoami) ; (Get-Content .\rootfs\tmp\xWSL\xWSL.xml).replace('AAAA', $WAI) | Set-Content .\rootfs\tmp\xWSL\xWSL.xml"
 POWERSHELL -C "$WAC = (pwd)    ; (Get-Content .\rootfs\tmp\xWSL\xWSL.xml).replace('QQQQ', $WAC) | Set-Content .\rootfs\tmp\xWSL\xWSL.xml"
@@ -158,7 +159,8 @@ ECHO:  - (Re)launch init from the Task Scheduler or by running the following com
 ECHO:    schtasks /run /tn %DISTRO%
 ECHO: 
 ECHO: %DISTRO% Installation Complete!  GUI will start in a few seconds...  
-PING -n 6 LOCALHOST > NUL 
+PING -n 6 LOCALHOST > NUL
+CMD "wsl --set-version %DISTRO% 2"
 START "Remote Desktop Connection" "MSTSC.EXE" "/V" "%DISTROFULL%\%DISTRO% (%XU%) Desktop.rdp"
 ECHO: 
 :ENDSCRIPT
