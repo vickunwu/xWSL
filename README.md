@@ -1,5 +1,7 @@
 # [xWSL.cmd (Version 1.1 / 20200923)](https://github.com/DesktopECHO/xWSL)
 
+**Mod By Vickunwu
+
 Simplicity - A 'one-liner' completely configures XFCE 4.14 on Ubuntu 20.04 in WSL
 
 * Much-improved desktop experience:  Updated xrdp to 0.9.13 and performance improvements in many areas (ie: Fullscreen TuxRacer and Minecraft, full-screen YouTube video, fluid desktop effects)
