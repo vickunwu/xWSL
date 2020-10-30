@@ -1,6 +1,6 @@
 # [xWSL.cmd (Version 1.1 / 20200923)](https://github.com/DesktopECHO/xWSL)
 
-**Mod By Vickunwu
+**Mod By Vickunwu**
 
 Simplicity - A 'one-liner' completely configures XFCE 4.14 on Ubuntu 20.04 in WSL
 
