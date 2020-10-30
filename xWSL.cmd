@@ -160,6 +160,7 @@ ECHO:    schtasks /run /tn %DISTRO%
 ECHO: 
 ECHO: %DISTRO% Installation Complete!  GUI will start in a few seconds...  
 PING -n 6 LOCALHOST > NUL
+REM ## Convert to WSL2
 CMD "wsl --set-version %DISTRO% 2"
 START "Remote Desktop Connection" "MSTSC.EXE" "/V" "%DISTROFULL%\%DISTRO% (%XU%) Desktop.rdp"
 ECHO: 
