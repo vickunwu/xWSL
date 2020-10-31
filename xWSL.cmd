@@ -81,7 +81,11 @@ ECHO Install Multimedia Components...
 REM ## Additional items to install can go here...
 REM ## %GO% "cd /tmp ; wget https://files.multimc.org/downloads/multimc_1.4-1.deb"
 REM ## %GO% "apt-get -y install extremetuxracer tilix /tmp/multimc_1.4-1.deb"
-%GO% "apt-get -y install firefox"
+%GO% "apt-get -y install firefox tor"
+%GO% "echo 'ExcludeNodes cn,hk,mo,kp,ir,sy,pk,cu,vn' | tee -a /etc/tor/torrc"
+%GO% "echo 'strictnodes 1' | tee -a /etc/tor/torrc"
+%GO% "apt-get -y install ibus-rime ; ibus restart ; ibus engine rime"
+%GO% "cd /tmp ; git clone https://github.com/jayknoxqu/ibus-rime.git ; cp -r ibus-rime/* ~/.config/ibus/rime ; ibus-daemon -drx"
 REM ## Things to do: Install Firefox; Install Rime; Install Tor;
 ECHO:
 ECHO Cleaning up...
