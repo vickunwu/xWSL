@@ -86,10 +86,6 @@ ECHO Install Multimedia Components...
 REM ## Additional items to install can go here...
 REM ## %GO% "cd /tmp ; wget https://files.multimc.org/downloads/multimc_1.4-1.deb"
 REM ## %GO% "apt-get -y install extremetuxracer tilix /tmp/multimc_1.4-1.deb"
-%GO% "apt-get -y install firefox-esr"
-REM ## %GO% "apt-get -y install tor"
-REM ## %GO% "echo 'ExcludeNodes cn,hk,mo,kp,ir,sy,pk,cu,vn' | tee -a /etc/tor/torrc"
-REM ## %GO% "echo 'strictnodes 1' | tee -a /etc/tor/torrc"
 REM ## Things to do: Install Firefox; Install Rime; Install Tor;
 ECHO:
 ECHO Cleaning up...
@@ -134,22 +130,18 @@ BASH -c "echo %XU%:%PWO% | chpasswd"
 %GO% "sed -i 's/COMPY/%COMPUTERNAME%-%DISTRO%\.local/g' /tmp/xWSL/xWSL.rdp"
 %GO% "sed -i 's/RDPPRT/%RDPPRT%/g' /tmp/xWSL/xWSL.rdp"
 %GO% "cp /tmp/xWSL/xWSL.rdp ./xWSL._"
-%GO% "apt-get -y install ibus-rime ; ibus restart ; ibus engine rime"
-%GO% "cp -r /tmp/xWSL/dist/clover-pinyin/* /home/$(ls /home)/.config/ibus/rime ; touch /home/$(ls /home)/.config/ibus/rime/ ; ibus restart"
-%GO% "rm -rf /tmp/xWSL/dist/clover-pinyin"
 ECHO $prd = Get-Content .tmp > .tmp.ps1
 ECHO ($prd ^| ConvertTo-SecureString -AsPlainText -Force) ^| ConvertFrom-SecureString ^| Out-File .tmp  >> .tmp.ps1
 POWERSHELL -ExecutionPolicy Bypass -Command ./.tmp.ps1
 TYPE .tmp>.tmpsec.txt
 COPY /y /b xWSL._+.tmpsec.txt "%DISTROFULL%\%DISTRO%.rdp" > NUL
 DEL /Q  xWSL._ .tmp*.* > NUL
-BASH -c "echo '%XU% ALL=(ALL:ALL) ALL' >> /etc/sudoers"
+BASH -c "echo '%XU% ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers"
 ECHO:
 ECHO Open Windows Firewall Ports for xRDP, SSH, mDNS...
 NETSH AdvFirewall Firewall add rule name="%DISTRO% xRDP" dir=in action=allow protocol=TCP localport=%RDPPRT% > NUL
 NETSH AdvFirewall Firewall add rule name="%DISTRO% Secure Shell" dir=in action=allow protocol=TCP localport=%SSHPRT% > NUL
 NETSH AdvFirewall Firewall add rule name="%DISTRO% Avahi Multicast DNS" dir=in action=allow program="%DISTROFULL%\rootfs\usr\sbin\avahi-daemon" enable=yes > NUL
-START /MIN "%DISTRO% Init" WSL ~ -u root -d %DISTRO% -e initWSL 2
 ECHO Building RDP Connection file, Console link, Init system...
 ECHO @WSLCONFIG /t %DISTRO% >  "%DISTROFULL%\Init.cmd"
 ECHO @WSL ~ -u root -d %DISTRO% -e initWSL 2 >> "%DISTROFULL%\Init.cmd"
@@ -174,6 +166,17 @@ ECHO Building Scheduled Task...
 POWERSHELL -C "$WAI = (whoami) ; (Get-Content .\rootfs\tmp\xWSL\xWSL.xml).replace('AAAA', $WAI) | Set-Content .\rootfs\tmp\xWSL\xWSL.xml"
 POWERSHELL -C "$WAC = (pwd)    ; (Get-Content .\rootfs\tmp\xWSL\xWSL.xml).replace('QQQQ', $WAC) | Set-Content .\rootfs\tmp\xWSL\xWSL.xml"
 SCHTASKS /Create /TN:%DISTRO% /XML .\rootfs\tmp\xWSL\xWSL.xml /F
+SET USER=wsl -u %XU% -d %DISTRO%
+%USER% "sudo apt-get -y install firefox-esr"
+%USER% "sudo apt-get -y install tor"
+%USER% "echo 'ExcludeNodes cn,hk,mo,kp,ir,sy,pk,cu,vn' | sudo tee -a /etc/tor/torrc"
+%USER% "echo 'strictnodes 1' | sudo tee -a /etc/tor/torrc"
+%USER% "sudo apt-get -y install ibus-rime ; ibus restart ; ibus engine rime"
+%USER% "cp -r /tmp/xWSL/dist/clover-pinyin/* /home/$(ls /home)/.config/ibus/rime ; touch /home/$(ls /home)/.config/ibus/rime/ ; ibus restart"
+%USER% "rm -rf /tmp/xWSL/dist/clover-pinyin"
+REM ## Convert to WSL2
+wsl --set-version %DISTRO% 2
+START /MIN "%DISTRO% Init" WSL ~ -u root -d %DISTRO% -e initWSL 2
 ECHO:
 ECHO:      Start: %RUNSTART%
 ECHO:        End: %RUNEND%
@@ -188,8 +191,6 @@ ECHO:    schtasks /run /tn %DISTRO%
 ECHO: 
 ECHO: %DISTRO% Installation Complete!  GUI will start in a few seconds...  
 PING -n 6 LOCALHOST > NUL
-REM ## Convert to WSL2
-wsl --set-version %DISTRO% 2
 START "Remote Desktop Connection" "MSTSC.EXE" "/V" "%DISTROFULL%\%DISTRO%.rdp"
 CD ..
 ECHO: 
