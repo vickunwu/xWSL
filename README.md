@@ -8,16 +8,21 @@ Simplicity - A 'one-liner' completely configures XFCE 4.14 on Ubuntu 20.04 in WS
 * Copy/Paste text and images work reliably between Windows and Linux in both directions
 * RDP Audio playback enabled (YouTube playback in browser works well with no audio/video desync)
 * Runs on Windows Server 2019 or Windows 10 Version 1809 (or newer, including Hyper-V Core)
-* 已升级WSL2, 并将官方源替换为中科大源, 默认浏览器修改为火狐 (2020/10/30)
+* 已升级WSL2, 并将官方源替换为中科大源, 默认浏览器修改为Firefox-ESR (2020/10/30)
 * 添加ibus-rime输入法, 配置文件来源于[fkxxyz
 /
-rime-cloverpinyin](https://github.com/fkxxyz/rime-cloverpinyin); 安装Tor并限制连接节点 (2020/10/31)
+rime-cloverpinyin](https://github.com/fkxxyz/rime-cloverpinyin); 安装Tor并限制连接节点 (2020/11/9)
+
+**提示**
+* 在Windows文件资源管理器中查看WSL2内文件路径如下
+    `\\wsl$\自定义的Distro名(e.g xWSL)`
 
 The xWSL instance is accessible from anywhere on your network, connect to it via the MS Remote Desktop Client (mstsc.exe)
 
 You will see best performance connecting from the local machine or over gigabit ethernet.
 
 ![xWSL Desktop](https://user-images.githubusercontent.com/33142753/94092529-687a1b80-fdf1-11ea-9e3b-bfbb6228e893.png)
+
 
 **在使用该脚本之前，请先以管理员身份在Powershell中执行如下命令，并在重启计算机后安装[适用于 x64 计算机的 WSL2 Linux 内核更新包](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi)**
 
