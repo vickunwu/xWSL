@@ -89,9 +89,6 @@ REM ## %GO% "apt-get -y install extremetuxracer tilix /tmp/multimc_1.4-1.deb"
 %GO% "apt-get -y install firefox-esr tor"
 %GO% "echo 'ExcludeNodes cn,hk,mo,kp,ir,sy,pk,cu,vn' | tee -a /etc/tor/torrc"
 %GO% "echo 'strictnodes 1' | tee -a /etc/tor/torrc"
-%GO% "apt-get -y install ibus-rime ; ibus restart ; ibus engine rime"
-%GO% "cp -r /tmp/xWSL/dist/clover-pinyin/* ~/.config/ibus/rime ; touch ~/.config/ibus/rime/ ; ibus restart"
-%GO% "rm -rf /tmp/xWSL/dist/clover-pinyin"
 REM ## Things to do: Install Firefox; Install Rime; Install Tor;
 ECHO:
 ECHO Cleaning up...
@@ -136,6 +133,9 @@ BASH -c "echo %XU%:%PWO% | chpasswd"
 %GO% "sed -i 's/COMPY/%COMPUTERNAME%-%DISTRO%\.local/g' /tmp/xWSL/xWSL.rdp"
 %GO% "sed -i 's/RDPPRT/%RDPPRT%/g' /tmp/xWSL/xWSL.rdp"
 %GO% "cp /tmp/xWSL/xWSL.rdp ./xWSL._"
+%GO% "apt-get -y install ibus-rime ; ibus restart ; ibus engine rime"
+%GO% "cp -r /tmp/xWSL/dist/clover-pinyin/* /home/vickunwu/.config/ibus/rime ; touch ~/.config/ibus/rime/ ; ibus restart"
+%GO% "rm -rf /tmp/xWSL/dist/clover-pinyin"
 ECHO $prd = Get-Content .tmp > .tmp.ps1
 ECHO ($prd ^| ConvertTo-SecureString -AsPlainText -Force) ^| ConvertFrom-SecureString ^| Out-File .tmp  >> .tmp.ps1
 POWERSHELL -ExecutionPolicy Bypass -Command ./.tmp.ps1
