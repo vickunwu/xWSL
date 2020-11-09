@@ -134,7 +134,7 @@ BASH -c "echo %XU%:%PWO% | chpasswd"
 %GO% "sed -i 's/RDPPRT/%RDPPRT%/g' /tmp/xWSL/xWSL.rdp"
 %GO% "cp /tmp/xWSL/xWSL.rdp ./xWSL._"
 %GO% "apt-get -y install ibus-rime ; ibus restart ; ibus engine rime"
-%GO% "cp -r /tmp/xWSL/dist/clover-pinyin/* /home/vickunwu/.config/ibus/rime ; touch ~/.config/ibus/rime/ ; ibus restart"
+%GO% "cp -r /tmp/xWSL/dist/clover-pinyin/* /home/$(ls /home)/.config/ibus/rime ; touch /home/$(ls /home)/.config/ibus/rime/ ; ibus restart"
 %GO% "rm -rf /tmp/xWSL/dist/clover-pinyin"
 ECHO $prd = Get-Content .tmp > .tmp.ps1
 ECHO ($prd ^| ConvertTo-SecureString -AsPlainText -Force) ^| ConvertFrom-SecureString ^| Out-File .tmp  >> .tmp.ps1
@@ -188,7 +188,7 @@ ECHO:
 ECHO: %DISTRO% Installation Complete!  GUI will start in a few seconds...  
 PING -n 6 LOCALHOST > NUL
 REM ## Convert to WSL2
-CMD "wsl --set-version %DISTRO% 2"
+wsl --set-version %DISTRO% 2
 START "Remote Desktop Connection" "MSTSC.EXE" "/V" "%DISTROFULL%\%DISTRO% (%XU%) Desktop.rdp"
 CD ..
 ECHO: 
