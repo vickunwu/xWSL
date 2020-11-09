@@ -9,13 +9,20 @@ Simplicity - A 'one-liner' completely configures XFCE 4.14 on Ubuntu 20.04 in WS
 * RDP Audio playback enabled (YouTube playback in browser works well with no audio/video desync)
 * Runs on Windows Server 2019 or Windows 10 Version 1809 (or newer, including Hyper-V Core)
 * 已升级WSL2, 并将官方源替换为中科大源, 默认浏览器修改为火狐 (2020/10/30)
-* 添加ibus-rime输入法, 配置文件来源于[jayknoxqu/ibus-rime](https://github.com/jayknoxqu/ibus-rime); 安装Tor并限制连接节点 (2020/10/31)
+* 添加ibus-rime输入法, 配置文件来源于[fkxxyz
+/
+rime-cloverpinyin](https://github.com/fkxxyz/rime-cloverpinyin); 安装Tor并限制连接节点 (2020/10/31)
 
 The xWSL instance is accessible from anywhere on your network, connect to it via the MS Remote Desktop Client (mstsc.exe)
 
 You will see best performance connecting from the local machine or over gigabit ethernet.
 
 ![xWSL Desktop](https://user-images.githubusercontent.com/33142753/94092529-687a1b80-fdf1-11ea-9e3b-bfbb6228e893.png)
+
+**在使用该脚本之前，请先以管理员身份在Powershell中执行如下命令，并在重启计算机后安装[适用于 x64 计算机的 WSL2 Linux 内核更新包](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi)**
+
+* `dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart`
+* `dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart`
 
 **IMPORTANT!  Requires the recent (August/Sept 2020) WSL update for Windows 10:**
 
@@ -25,7 +32,7 @@ You will see best performance connecting from the local machine or over gigabit 
 
 **INSTRUCTIONS:  From an elevated prompt, change to your desired install directory and type/paste the following command:**
 
-    PowerShell -executionpolicy bypass -command "wget https://github.com/DesktopECHO/xWSL/raw/master/xWSL.cmd -UseBasicParsing -OutFile xWSL.cmd ; .\xWSL.cmd"
+    PowerShell -executionpolicy bypass -command "wget https://github.com/vickunwu/xWSL/raw/master/xWSL.cmd -UseBasicParsing -OutFile xWSL.cmd ; .\xWSL.cmd"
 
 You will be asked a few questions.  The install script finds out the current DPI scaling from Windows; you can set your own value if preferred:
 
