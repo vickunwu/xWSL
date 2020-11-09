@@ -86,9 +86,10 @@ ECHO Install Multimedia Components...
 REM ## Additional items to install can go here...
 REM ## %GO% "cd /tmp ; wget https://files.multimc.org/downloads/multimc_1.4-1.deb"
 REM ## %GO% "apt-get -y install extremetuxracer tilix /tmp/multimc_1.4-1.deb"
-%GO% "apt-get -y install firefox-esr tor"
-%GO% "echo 'ExcludeNodes cn,hk,mo,kp,ir,sy,pk,cu,vn' | tee -a /etc/tor/torrc"
-%GO% "echo 'strictnodes 1' | tee -a /etc/tor/torrc"
+%GO% "apt-get -y install firefox-esr"
+REM ## %GO% "apt-get -y install tor"
+REM ## %GO% "echo 'ExcludeNodes cn,hk,mo,kp,ir,sy,pk,cu,vn' | tee -a /etc/tor/torrc"
+REM ## %GO% "echo 'strictnodes 1' | tee -a /etc/tor/torrc"
 REM ## Things to do: Install Firefox; Install Rime; Install Tor;
 ECHO:
 ECHO Cleaning up...
@@ -140,7 +141,7 @@ ECHO $prd = Get-Content .tmp > .tmp.ps1
 ECHO ($prd ^| ConvertTo-SecureString -AsPlainText -Force) ^| ConvertFrom-SecureString ^| Out-File .tmp  >> .tmp.ps1
 POWERSHELL -ExecutionPolicy Bypass -Command ./.tmp.ps1
 TYPE .tmp>.tmpsec.txt
-COPY /y /b xWSL._+.tmpsec.txt "%DISTROFULL%\%DISTRO% (%XU%) Desktop.rdp" > NUL
+COPY /y /b xWSL._+.tmpsec.txt "%DISTROFULL%\%DISTRO%.rdp" > NUL
 DEL /Q  xWSL._ .tmp*.* > NUL
 BASH -c "echo '%XU% ALL=(ALL:ALL) ALL' >> /etc/sudoers"
 ECHO:
@@ -152,16 +153,16 @@ START /MIN "%DISTRO% Init" WSL ~ -u root -d %DISTRO% -e initWSL 2
 ECHO Building RDP Connection file, Console link, Init system...
 ECHO @WSLCONFIG /t %DISTRO% >  "%DISTROFULL%\Init.cmd"
 ECHO @WSL ~ -u root -d %DISTRO% -e initWSL 2 >> "%DISTROFULL%\Init.cmd"
-ECHO @WSL ~ -u %XU% -d %DISTRO% > "%DISTROFULL%\%DISTRO% (%XU%) Console.cmd"
-POWERSHELL -Command "Copy-Item '%DISTROFULL%\%DISTRO% (%XU%) Console.cmd' ([Environment]::GetFolderPath('Desktop'))"
-POWERSHELL -Command "Copy-Item '%DISTROFULL%\%DISTRO% (%XU%) Desktop.rdp' ([Environment]::GetFolderPath('Desktop'))"
+ECHO @WSL ~ -u %XU% -d %DISTRO% > "%DISTROFULL%\Console.cmd"
+POWERSHELL -Command "Copy-Item '%DISTROFULL%\Console.cmd' ([Environment]::GetFolderPath('Desktop'))"
+POWERSHELL -Command "Copy-Item '%DISTROFULL%\%DISTRO%.rdp' ([Environment]::GetFolderPath('Desktop'))"
 ECHO Building Uninstaller... [%DISTROFULL%\%DISTRO%_Uninstall.cmd]
 ECHO @COLOR 1F                                                                                                   >  "%DISTROFULL%\Uninstall %DISTRO%.cmd"
 ECHO @ECHO Uninstall %DISTRO%?                                                                                   >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
 ECHO @PAUSE                                                                                                      >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
 ECHO @COPY /Y "%DISTROFULL%\LxRunOffline.exe" "%DOWNLOADAREA%"                                                           >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
-ECHO @POWERSHELL -Command "Remove-Item ([Environment]::GetFolderPath('Desktop')+'\%DISTRO% (%XU%) Console.cmd')" >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
-ECHO @POWERSHELL -Command "Remove-Item ([Environment]::GetFolderPath('Desktop')+'\%DISTRO% (%XU%) Desktop.rdp')" >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
+ECHO @POWERSHELL -Command "Remove-Item ([Environment]::GetFolderPath('Desktop')+'\Console.cmd')" >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
+ECHO @POWERSHELL -Command "Remove-Item ([Environment]::GetFolderPath('Desktop')+'\%DISTRO%.rdp')" >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
 ECHO @SCHTASKS /Delete /TN:%DISTRO% /F                                                                           >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
 ECHO @CLS                                                                                                        >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
 ECHO @CD ..                                                                                                      >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
@@ -189,7 +190,7 @@ ECHO: %DISTRO% Installation Complete!  GUI will start in a few seconds...
 PING -n 6 LOCALHOST > NUL
 REM ## Convert to WSL2
 wsl --set-version %DISTRO% 2
-START "Remote Desktop Connection" "MSTSC.EXE" "/V" "%DISTROFULL%\%DISTRO% (%XU%) Desktop.rdp"
+START "Remote Desktop Connection" "MSTSC.EXE" "/V" "%DISTROFULL%\%DISTRO%.rdp"
 CD ..
 ECHO: 
 :ENDSCRIPT

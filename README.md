@@ -17,17 +17,18 @@ rime-cloverpinyin](https://github.com/fkxxyz/rime-cloverpinyin); 安装Tor并限
 * 在Windows文件资源管理器中查看WSL2内文件路径如下
     `\\wsl$\自定义的Distro名(e.g xWSL)`
 
+
+**在使用该脚本之前，请先以管理员身份在Powershell中执行如下命令，并在重启计算机后安装[适用于 x64 计算机的 WSL2 Linux 内核更新包](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi)**
+
+* `dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart`
+* `dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart`
+
 The xWSL instance is accessible from anywhere on your network, connect to it via the MS Remote Desktop Client (mstsc.exe)
 
 You will see best performance connecting from the local machine or over gigabit ethernet.
 
 ![xWSL Desktop](https://user-images.githubusercontent.com/33142753/94092529-687a1b80-fdf1-11ea-9e3b-bfbb6228e893.png)
 
-
-**在使用该脚本之前，请先以管理员身份在Powershell中执行如下命令，并在重启计算机后安装[适用于 x64 计算机的 WSL2 Linux 内核更新包](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi)**
-
-* `dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart`
-* `dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart`
 
 **IMPORTANT!  Requires the recent (August/Sept 2020) WSL update for Windows 10:**
 
